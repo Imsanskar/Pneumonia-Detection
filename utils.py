@@ -73,11 +73,13 @@ def evaluate_validation_set(model, dataloader):
 def calculate_accuracy(model, dataloader):
     model.eval()
     correct_count, all_count = 0, 0
+    device = "cuda" if torch.cuda.is_available() else "cpu"
     for images,labels in dataloader:
         for i in range(len(labels)):
             img = images[i].view(1, 3, 224, 224)
+            labels = labels.to(device)
             with torch.no_grad():
-                logps = model(img)
+                logps = model(img.to(device))
 
             ps = torch.exp(logps)
             probab = list(ps.cpu()[0])

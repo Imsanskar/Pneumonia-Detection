@@ -1,5 +1,21 @@
-import torch.nn as nn
+import torch.nn as nn 
+import torchvision
 import torch
+
+class VGGClassifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.vgg19 = torchvision.models.vgg19(weights = torchvision.models.VGG19_Weights.DEFAULT)
+        for param in self.vgg19.parameters():
+            param.require_grad = False 
+        for param in self.vgg19.classifier.parameters():
+            param.requires_grad = True
+        self.vgg19.classifier = nn.Linear(
+            25088, 2
+        )
+        
+    def forward(self, x):
+        return self.vgg19(x)
 
 class Classifier(nn.Module):
     def generate_conv_module(self, in_channel, out_channel, kernel_size, stride, padding, pool_kernel):
